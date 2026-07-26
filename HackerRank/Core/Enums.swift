@@ -6,7 +6,7 @@
 //
 
 enum TestOption: String, CaseIterable {
-    case none = "000"
+    case none = "0000"
     case Salir = "0"
     case Saludar = "1"
     case SumarDosNumeros = "2"
