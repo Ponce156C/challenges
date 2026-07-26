@@ -5,31 +5,33 @@
 //  Created by Carlos Ponce on 02/07/26.
 //
 
+import Challenges_Interfaces
+
 class SayHi: ChallengeProtocol {
+    typealias info = String
     
-    let error: () -> Void = {
-        print("Algo salio mal")
+    let error: String = "Algo salio mal"
+    
+    init(_ input: InputProtocol) { initMessage() }
+    
+    deinit { deinitMessage() }
+    
+    func operation(_ input: any Challenges_Interfaces.InputProtocol) -> String {
+        switch compute(input) {
+        case .success(let name):    getResult(data: name)
+        case .failure:              error
+        }
     }
     
-    init(_ input: InputProtocol) {
-        initMessage()
-        operation(input)
-    }
-    
-    deinit {
-        deinitMessage()
-    }
-    
-    func operation(_ input: any InputProtocol) {
+    func compute(_ input: InputProtocol) -> Result<info, ComputeError> {
         guard let texts = self.getInputs(inputs: input),
         let name = texts.first else {
-            error()
-            return
+            return .failure(.invalidInput)
         }
-        printResult(data: name)
+        return .success(name)
     }
     
-    func printResult(data: Any) {
-        print("😃👋👋👋👋👋 Hola, \(data)")
+    func getResult(data: info) -> String {
+        return "😃👋👋👋👋👋 Hola, \(data)"
     }
 }
