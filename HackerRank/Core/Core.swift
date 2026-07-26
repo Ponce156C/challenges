@@ -6,25 +6,29 @@
 //
 
 import Foundation
+import Challenges_Interfaces
+import Math_Challenges
 
-class Core: ChallengeProtocol {
-    
-    let error: () -> Void = {
-        print("❗️ Opción no válida.")
-    }
+class Core: CoreProtocol {
+    let error: String = "❗️ Opción no válida."
     
     private var continuar: Bool = true
     private var optionSelected: TestOption = .none
     
     init() {
         initMessage()
+    }
+    
+    func run() {
         while self.continuar {
             mostrarMenu()
             guard let inputs = readLineOperations() else {
-                error()
+                print(error)
                 return
             }
-            operation(inputs)
+            let operation = operation(inputs)
+            print(operation)
+            optionSelected = .none
         }
     }
     
@@ -43,36 +47,33 @@ class Core: ChallengeProtocol {
         return inputs
     }
     
-    func operation(_ input: any InputProtocol) {
+    func operation(_ input: InputProtocol) -> String {
+        var challenge: (any ChallengeProtocol)? = nil
         switch optionSelected {
         case .Salir:
             close()
         case .Saludar:
-            _ = SayHi(input)
+            challenge = SayHi(input)
         case .SumarDosNumeros:
-            _ = AddNumbers(input)
+            challenge = AddNumbers()
         case .Multiplicacion:
-            _ = Multiplication(input)
+            challenge = Multiplication()
         case .PlusMinus:
 //                _ = PlusMinus()
-            print("No esta disponible")
+            return "No esta disponible"
         case .PivotInteger:
-            _ = PivotInteger(input)
+            challenge = PivotInteger()
         case .PalindromoNumber:
-            _ = PalindromeNumber(input)
+            challenge = PalindromeNumber()
         case .none:
-            print("none")
+            return "none"
         }
-        optionSelected = .none
-    }
-    
-    func printResult(data: Any) {
-        // no code
+        return challenge?.operation(input) ?? error
     }
     
     func getInput() -> InputProtocol? {
         let texts = optionSelected.textToPresent.components(separatedBy: ",")
-        var inputs = Input()
+        var inputs = InputParameters()
         texts.forEach { text in
             print(text, terminator: "")
             guard let input = readLine() else {

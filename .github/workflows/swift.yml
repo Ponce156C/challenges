@@ -1,0 +1,50 @@
+# Compila el proyecto (herramienta de línea de comandos en Swift, gestionada con Xcode).
+# Nota: este repo NO usa Swift Package Manager (no hay Package.swift), es un
+# .xcodeproj, así que el build se hace con `xcodebuild`, no con `swift build`.
+# Docs: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-swift
+name: Swift
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build (Xcode)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Mostrar versiones de Xcode/Swift
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Build
+        run: |
+          xcodebuild build \
+            -project HackerRank.xcodeproj \
+            -scheme HackerRank \
+            -configuration Debug \
+            -destination "platform=macOS" \
+            CODE_SIGNING_ALLOWED=NO
+
+  # Este proyecto todavía no tiene un target de pruebas. En cuanto agregues
+  # uno (XCTest o swift-testing), descomenta este job para correrlo en CI.
+  # test:
+  #   name: Test (Xcode)
+  #   runs-on: macos-latest
+  #   needs: build
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Run tests
+  #       run: |
+  #         xcodebuild test \
+  #           -project HackerRank.xcodeproj \
+  #           -scheme HackerRank \
+  #           -destination "platform=macOS" \
+  #           CODE_SIGNING_ALLOWED=NO
